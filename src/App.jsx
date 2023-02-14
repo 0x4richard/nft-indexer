@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react"
 import { Alchemy, Network } from "alchemy-sdk"
 import { useState } from "react"
+import AuthButton from "./component/AuthButton"
 
 function App() {
   const [userAddress, setUserAddress] = useState("")
@@ -43,6 +44,7 @@ function App() {
   }
   return (
     <Box w="100vw">
+      <AuthButton setUserAddress={setUserAddress} />
       <Center>
         <Flex
           alignItems={"center"}
@@ -66,6 +68,7 @@ function App() {
         <Heading mt={42}>Get all the ERC-721 tokens of this address:</Heading>
         <Input
           onChange={(e) => setUserAddress(e.target.value)}
+          value={userAddress}
           color="black"
           w="600px"
           textAlign="center"

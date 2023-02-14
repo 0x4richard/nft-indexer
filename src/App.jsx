@@ -4,9 +4,9 @@ import {
   Center,
   Flex,
   Heading,
-  Image,
   Input,
   SimpleGrid,
+  Spinner,
   Text,
 } from "@chakra-ui/react"
 import { Alchemy, Network } from "alchemy-sdk"
@@ -18,9 +18,12 @@ function App() {
   const [userAddress, setUserAddress] = useState("")
   const [results, setResults] = useState([])
   const [hasQueried, setHasQueried] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [tokenDataObjects, setTokenDataObjects] = useState([])
 
   async function getNFTsForOwner() {
+    setIsLoading(true)
+
     const config = {
       apiKey: import.meta.env.VITE_ALCHEMY_API_KEY,
       network: Network.ETH_MAINNET,
@@ -42,7 +45,9 @@ function App() {
 
     setTokenDataObjects(await Promise.all(tokenDataPromises))
     setHasQueried(true)
+    setIsLoading(false)
   }
+
   return (
     <Box w="100vw">
       <AuthButton setUserAddress={setUserAddress} />
@@ -86,14 +91,13 @@ function App() {
 
         <Heading my={10}>Here are your NFTs:</Heading>
 
-        {hasQueried ? (
+        {isLoading && <Spinner />}
+        {hasQueried && !isLoading && (
           <SimpleGrid w={"90vw"} columns={4} spacing={10}>
             {results.ownedNfts.map((_, i) => {
               return <NftCard key={i} data={tokenDataObjects[i]} />
             })}
           </SimpleGrid>
-        ) : (
-          "Please make a query! The query may take a few seconds..."
         )}
       </Flex>
     </Box>

@@ -12,6 +12,7 @@ import {
 import { Alchemy, Network } from "alchemy-sdk"
 import { useState } from "react"
 import AuthButton from "./component/AuthButton"
+import NftCard from "./component/NftCard"
 
 function App() {
   const [userAddress, setUserAddress] = useState("")
@@ -60,7 +61,6 @@ function App() {
         </Flex>
       </Center>
       <Flex
-        w="100%"
         flexDirection="column"
         alignItems="center"
         justifyContent={"center"}
@@ -69,36 +69,27 @@ function App() {
         <Input
           onChange={(e) => setUserAddress(e.target.value)}
           value={userAddress}
-          color="black"
-          w="600px"
           textAlign="center"
           p={4}
-          bgColor="white"
-          fontSize={24}
+          width="auto"
+          fontSize={20}
+          placeholder="Wallet address or ENS name..."
         />
-        <Button fontSize={20} onClick={getNFTsForOwner} mt={36} bgColor="blue">
+        <Button
+          fontSize={20}
+          onClick={getNFTsForOwner}
+          mt={5}
+          colorScheme="teal"
+        >
           Fetch NFTs
         </Button>
 
-        <Heading my={36}>Here are your NFTs:</Heading>
+        <Heading my={10}>Here are your NFTs:</Heading>
 
         {hasQueried ? (
-          <SimpleGrid w={"90vw"} columns={4} spacing={24}>
-            {results.ownedNfts.map((e, i) => {
-              return (
-                <Flex
-                  flexDir={"column"}
-                  color="white"
-                  bg="blue"
-                  w={"20vw"}
-                  key={e.id}
-                >
-                  <Box>
-                    <b>Name:</b> {tokenDataObjects[i].title}&nbsp;
-                  </Box>
-                  <Image src={tokenDataObjects[i].rawMetadata.image} />
-                </Flex>
-              )
+          <SimpleGrid w={"90vw"} columns={4} spacing={10}>
+            {results.ownedNfts.map((_, i) => {
+              return <NftCard key={i} data={tokenDataObjects[i]} />
             })}
           </SimpleGrid>
         ) : (

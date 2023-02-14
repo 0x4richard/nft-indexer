@@ -1,7 +1,15 @@
-import { Button, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react"
+import {
+  Button,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuDivider,
+} from "@chakra-ui/react"
 import { ChevronDownIcon } from "@chakra-ui/icons"
 import { useAccount, useConnect, useDisconnect } from "wagmi"
 import { InjectedConnector } from "wagmi/connectors/injected"
+import { trimWalletAddress } from "../utils/format"
 
 export default function AuthButton({ setUserAddress }) {
   const { address, isConnected } = useAccount()
@@ -15,16 +23,26 @@ export default function AuthButton({ setUserAddress }) {
   if (isConnected) {
     return (
       <Menu>
-        <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-          {address}
+        <MenuButton
+          as={Button}
+          rightIcon={<ChevronDownIcon />}
+          colorScheme="teal"
+          variant="outline"
+        >
+          {trimWalletAddress(address)}
         </MenuButton>
         <MenuList>
           <MenuItem onClick={handleSearch}>Search</MenuItem>
+          <MenuDivider />
           <MenuItem onClick={disconnect}>Disconnect</MenuItem>
         </MenuList>
       </Menu>
     )
   }
 
-  return <Button onClick={connect}>Connect Wallet</Button>
+  return (
+    <Button onClick={connect} colorScheme="teal" variant="solid">
+      Connect Wallet
+    </Button>
+  )
 }

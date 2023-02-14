@@ -2,8 +2,8 @@ import { getDefaultProvider } from "ethers"
 import React from "react"
 import ReactDOM from "react-dom/client"
 import { createClient, WagmiConfig } from "wagmi"
+import { ChakraProvider } from "@chakra-ui/react"
 import App from "./App"
-import "./index.css"
 
 const etherClient = createClient({
   autoConnect: true,
@@ -13,7 +13,9 @@ const etherClient = createClient({
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <WagmiConfig client={etherClient}>
-      <App />
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
     </WagmiConfig>
   </React.StrictMode>
 )

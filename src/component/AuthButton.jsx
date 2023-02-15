@@ -5,20 +5,34 @@ import {
   MenuList,
   MenuItem,
   MenuDivider,
+  useToast,
 } from "@chakra-ui/react"
 import { ChevronDownIcon } from "@chakra-ui/icons"
 import { useAccount, useConnect, useDisconnect } from "wagmi"
 import { InjectedConnector } from "wagmi/connectors/injected"
 import { trimWalletAddress } from "../utils/format"
+import { useEffect } from "react"
 
 export default function AuthButton({ setUserAddress }) {
   const { address, isConnected } = useAccount()
-  const { connect } = useConnect({ connector: new InjectedConnector() })
+  const { connect, error } = useConnect({ connector: new InjectedConnector() })
   const { disconnect } = useDisconnect()
+  const toast = useToast()
 
   const handleSearch = async () => {
     setUserAddress(address)
   }
+
+  useEffect(() => {
+    if (!!error && error.name === "ConnectorNotFoundError") {
+      toast({
+        title: "Error",
+        description: "Please install MetaMask.",
+        isClosable: true,
+        status: "error",
+      })
+    }
+  }, [error])
 
   if (isConnected) {
     return (

@@ -8,6 +8,7 @@ import {
   SimpleGrid,
   Spinner,
   Text,
+  useToast,
 } from "@chakra-ui/react"
 import { Alchemy, Network } from "alchemy-sdk"
 import { useState } from "react"
@@ -20,8 +21,19 @@ function App() {
   const [hasQueried, setHasQueried] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [tokenDataObjects, setTokenDataObjects] = useState([])
+  const toast = useToast()
 
   async function getNFTsForOwner() {
+    if (!userAddress) {
+      toast({
+        title: "Error",
+        description: "Please enter an address or ENS name.",
+        status: "error",
+        isClosable: true,
+      })
+      return
+    }
+
     setIsLoading(true)
 
     const config = {
@@ -30,7 +42,20 @@ function App() {
     }
 
     const alchemy = new Alchemy(config)
-    const data = await alchemy.nft.getNftsForOwner(userAddress)
+    let data
+    try {
+      data = await alchemy.nft.getNftsForOwner(userAddress)
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Get NFTs for owner failed.",
+
+        status: "error",
+        isClosable: true,
+      })
+      setIsLoading(false)
+      return
+    }
     setResults(data)
 
     const tokenDataPromises = []
@@ -43,7 +68,19 @@ function App() {
       tokenDataPromises.push(tokenData)
     }
 
-    setTokenDataObjects(await Promise.all(tokenDataPromises))
+    const result = await Promise.allSettled(tokenDataPromises)
+    if (result.some((r) => r.status === "rejected")) {
+      toast({
+        title: "Error",
+        description: "Get NFT metadata failed.",
+        status: "error",
+        isClosable: true,
+      })
+      setIsLoading(false)
+      return
+    }
+
+    setTokenDataObjects(result.map((r) => r.value))
     setHasQueried(true)
     setIsLoading(false)
   }
